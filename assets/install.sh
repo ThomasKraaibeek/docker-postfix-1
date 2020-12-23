@@ -58,13 +58,7 @@ if [[ -n "$(find /opt/ssl -iname *.crt)" && -n "$(find /opt/ssl -iname *.key)" ]
   # /etc/postfix/main.cf
   postconf -e smtpd_tls_cert_file=$(find /opt/ssl -iname *.crt)
   postconf -e smtpd_tls_key_file=$(find /opt/ssl -iname *.key)
-  
-  # postconf -e smtpd_tls_cert_file=/opt/ssl/localhost.pem
-  # postconf -e smtpd_tls_key_file=/opt/ssl/localhost-key.pem
-
-  postconf -e smtpd_tls_eccert_file=$(find /opt/ssl -iname *.crt)
-  postconf -e smtpd_tls_eckey_file=$(find /opt/ssl -iname *.key)
-  
+    
   postconf -e smtpd_tls_protocols=!SSLv2,!SSLv3,!TLSv1,!TLSv1.1
   postconf -e smtp_tls_protocols=!SSLv2,!SSLv3,!TLSv1,!TLSv1.1
   postconf -e smtpd_tls_mandatory_protocols=!SSLv2,!SSLv3,!TLSv1,!TLSv1.1
@@ -93,6 +87,15 @@ if [[ -n "$(find /opt/ssl -iname *.crt)" && -n "$(find /opt/ssl -iname *.key)" ]
   postconf -P "submission/inet/smtpd_sasl_auth_enable=yes"
   postconf -P "submission/inet/milter_macro_daemon_name=ORIGINATING"
   postconf -P "submission/inet/smtpd_recipient_restrictions=permit_sasl_authenticated,reject_unauth_destination"
+
+  postconf -M smtps/inet="smtps   inet   n   -   y   -   -   smtpd"
+  postconf -P "smtps/inet/syslog_name=postfix/smtps"
+  postconf -P "smtps/inet/smtpd_tls_security_level=encrypt"
+  postconf -P "smtps/inet/smtpd_sasl_auth_enable=yes"
+  postconf -P "smtps/inet/smtpd_tls_wrappermode=yes"
+  postconf -P "smtps/inet/milter_macro_daemon_name=ORIGINATING"
+  postconf -P "smtps/inet/smtpd_recipient_restrictions=permit_sasl_authenticated,reject_unauth_destination"
+
 fi
 
 #############
